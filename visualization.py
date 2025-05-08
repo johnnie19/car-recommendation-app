@@ -3,22 +3,6 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def create_price_comparison_chart(df):
-    """Create a box plot showing price distribution by manufacturer"""
-    if df is None or 'make' not in df.columns or 'price' not in df.columns:
-        return None
-    
-    # Get top 10 manufacturers by count
-    top_makes = df['make'].value_counts().head(10).index.tolist()
-    plot_df = df[df['make'].isin(top_makes)]
-    
-    fig = px.box(plot_df, x='make', y='price', 
-                 title='Price Distribution by Top Manufacturers',
-                 labels={'make': 'Manufacturer', 'price': 'Price ($)'},
-                 color='make')
-    
-    return fig
-
 def create_body_type_chart(df):
     """Create a pie chart showing distribution of car body types"""
     if df is None or 'vehicle size class' not in df.columns:
@@ -52,5 +36,21 @@ def create_fuel_efficiency_chart(df):
                     color='make', opacity=0.7,
                     labels={'year': 'Year', 'combined mpg for fuel type1': 'Combined MPG'},
                     title='Fuel Efficiency Trends Over Time')
+    
+    return fig
+
+def create_mpg_comparison_chart(df):
+    """Create a box plot showing MPG distribution by manufacturer"""
+    if df is None or 'make' not in df.columns or 'combined mpg for fuel type1' not in df.columns:
+        return None
+    
+    # Get top 10 manufacturers by count
+    top_makes = df['make'].value_counts().head(10).index.tolist()
+    plot_df = df[df['make'].isin(top_makes)]
+    
+    fig = px.box(plot_df, x='make', y='combined mpg for fuel type1', 
+                 title='Fuel Efficiency by Top Manufacturers',
+                 labels={'make': 'Manufacturer', 'combined mpg for fuel type1': 'Combined MPG'},
+                 color='make')
     
     return fig

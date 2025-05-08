@@ -9,10 +9,11 @@ import plotly.express as px
 # Import custom modules
 from data_processor import load_data, clean_data, filter_data
 from model import get_car_recommendations
-from visualization import create_price_comparison_chart, create_body_type_chart, create_year_chart, create_fuel_efficiency_chart
+from visualization import create_body_type_chart, create_year_chart, create_fuel_efficiency_chart, create_mpg_comparison_chart
 import requests
 from urllib.parse import quote
 import random
+import time
 
 # Function to get car image URL from the web
 @st.cache_data(ttl=3600)  # Cache for 1 hour
@@ -194,17 +195,17 @@ if data_loaded and st.session_state.claude_key_set:
 
         # Advanced filters
         with st.expander("Advanced Filters"):
-            # Determine price range values
-            min_price = 0
-            max_price = 100000
-            if 'price' in df.columns:
-                min_price = int(df['price'].min())
-                max_price = int(df['price'].max())
-            
-            price_range = st.slider("Price Range ($)", 
-                                min_value=min_price, 
-                                max_value=max_price,
-                                value=(min_price, max_price))
+            # Year range slider
+            min_year = 2000
+            max_year = 2023
+            if 'year' in df.columns:
+                min_year = int(df['year'].min())
+                max_year = int(df['year'].max())
+                
+            year_range = st.slider("Year Range", 
+                                min_value=min_year, 
+                                max_value=max_year,
+                                value=(min_year, max_year))
 
             makes = []
             if 'make' in df.columns:
@@ -230,7 +231,7 @@ if data_loaded and st.session_state.claude_key_set:
             try:
                 # Apply filters to dataset
                 filters = {
-                    'price_range': price_range,
+                    'year_range': year_range,
                     'makes': makes,
                     'body_types': body_types
                 }
@@ -280,8 +281,6 @@ if data_loaded and st.session_state.claude_key_set:
                                 specs = []
                                 if 'year' in car:
                                     specs.append(f"Year: {car['year']}")
-                                if 'price' in car:
-                                    specs.append(f"Price: ${car['price']:,.2f}")
                                 if 'combined mpg for fuel type1' in car:
                                     specs.append(f"MPG: {car['combined mpg for fuel type1']}")
                                 if 'fuel type' in car:
@@ -312,16 +311,23 @@ if data_loaded and st.session_state.claude_key_set:
             st.subheader("Market Insights")
 
             # Choose visualization based on available columns
-            viz_tab1, viz_tab2 = st.tabs(["Price Comparison", "Feature Distribution"])
+            viz_tab1, viz_tab2, viz_tab3 = st.tabs(["Fuel Efficiency Trends", "MPG by Manufacturer", "Body Types"])
 
             with viz_tab1:
-                price_chart = create_price_comparison_chart(df)
-                if price_chart:
-                    st.plotly_chart(price_chart, use_container_width=True)
+                mpg_chart = create_fuel_efficiency_chart(df)
+                if mpg_chart:
+                    st.plotly_chart(mpg_chart, use_container_width=True)
                 else:
-                    st.info("Price comparison chart is not available with current data.")
-
+                    st.info("Fuel efficiency chart is not available with current data.")
+                    
             with viz_tab2:
+                mpg_comparison = create_mpg_comparison_chart(df)
+                if mpg_comparison:
+                    st.plotly_chart(mpg_comparison, use_container_width=True)
+                else:
+                    st.info("MPG comparison chart is not available with current data.")
+
+            with viz_tab3:
                 body_chart = create_body_type_chart(df)
                 if body_chart:
                     st.plotly_chart(body_chart, use_container_width=True)

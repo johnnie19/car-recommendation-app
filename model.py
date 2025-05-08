@@ -41,7 +41,7 @@ def get_car_recommendations(user_requirements, car_data, api_key=None, top_n=5):
     {user_requirements}
     
     Based on these requirements, provide the names of {top_n} DIFFERENT car models (not just different years of the same model) 
-    that best match these criteria. Consider factors like price, fuel efficiency, body type, and features that align with the user's needs.
+    that best match these criteria. Consider factors like fuel efficiency, body type, and features that align with the user's needs.
     
     IMPORTANT: 
     1. Select DIVERSE models - do not recommend multiple years of the same model
@@ -199,9 +199,11 @@ def get_car_recommendations(user_requirements, car_data, api_key=None, top_n=5):
             print("No matches found, returning top cars as fallback")
             # Fallback: return top cars if no matches found
             if len(car_data) > 0:
-                # Sort by price if available, otherwise just take the first few rows
-                if 'price' in car_data.columns:
-                    fallback_results = car_data.sort_values('price').head(top_n)
+                # Sort by year or fuel efficiency if available, otherwise just take the first few rows
+                if 'year' in car_data.columns:
+                    fallback_results = car_data.sort_values('year', ascending=False).head(top_n)
+                elif 'combined mpg for fuel type1' in car_data.columns:
+                    fallback_results = car_data.sort_values('combined mpg for fuel type1', ascending=False).head(top_n)
                 else:
                     fallback_results = car_data.head(top_n)
                 return fallback_results
