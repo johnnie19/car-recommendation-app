@@ -1,130 +1,120 @@
 # 🚗 Intelligent Car Recommendation System
 
-A Streamlit-based web application that uses Anthropic's Claude AI to provide personalized car recommendations based on user requirements.
+A Streamlit-based web application that helps users find their perfect car using natural language requirements and AI-driven recommendations via Anthropic's Claude. Featuring advanced filters, interactive visualizations, and dynamic car images, this project delivers a seamless and responsive user experience.
 
-## Overview
+## 🎯 Overview
 
-This system helps users find their ideal car by combining:
-- Natural language processing to understand user preferences
-- AI-driven recommendations based on car specifications
-- Interactive data visualization of car market insights
-- User-friendly interface with customizable filters
+This system empowers users to discover their ideal vehicle by combining:
 
-## Features
+* **Natural Language Understanding**: Users describe their preferences in plain English.
+* **AI-Powered Recommendations**: Claude analyzes requirements against a comprehensive car dataset.
+* **Customizable Filters**: Refine results by manufacturer, year range, and body type.
+* **Interactive Visual Insights**: Explore market trends through charts for fuel efficiency, model distribution, and more.
+* **Dynamic Image Fetching**: Automatically retrieves car images from multiple sources with caching.
 
-- **AI-Powered Recommendations**: Uses Anthropic's Claude model to analyze user requirements and recommend the most suitable cars
-- **Natural Language Input**: Describe what you want in a car using everyday language
-- **Advanced Filtering**: Refine recommendations by price range, manufacturer, body type, and more
-- **Visual Insights**: Interactive charts showing price distributions, body types, and other market trends
-- **Dynamic Car Images**: Automatically fetches relevant car images for recommendations
-- **Responsive Design**: Clean, user-friendly interface that works on various devices
+## 🚀 Features
 
-## Project Structure
+* **AI-Powered Recommendations**: Uses Anthropic's Claude (default: Claude 3 Haiku) to generate personalized car suggestions.
+* **Natural Language Input**: Describe what you want in a car using everyday language.
+* **Advanced Filters**: Filter by make, model year range, body type, and other specifications.
+* **Interactive Visualizations**: Dive into market insights with Plotly charts (body type distribution, MPG trends, price analysis).
+* **Dynamic Car Images**: Fetch and cache relevant car images for each recommendation.
+* **Responsive UI**: Designed with Streamlit for a clean, mobile-friendly interface.
 
-- `app.py`: Main Streamlit application with the user interface
-- `model.py`: Integration with Anthropic's Claude API for car recommendations
-- `data_processor.py`: Functions for loading, cleaning, and filtering car data
-- `visualization.py`: Functions that create interactive Plotly visualizations
+## 📁 Project Structure
 
-## Requirements
+```
+├── app.py                # Main Streamlit application and UI
+├── data_processor.py     # Load, clean, and filter car dataset
+├── model.py              # Integrate with Anthropic Claude API + retry logic
+├── visualization.py      # Plotly chart-generating helper functions
+├── requirements.txt      # Python dependencies
+```
 
-- Python 3.7+
-- Streamlit
-- Pandas
-- NumPy
-- Plotly
-- Anthropic Python SDK
-- python-dotenv
-- Requests
+### `app.py`
 
-## Installation
+* Sets up Streamlit layout and sidebar UI.
+* Loads and caches data using `load_data` and `clean_data` from `data_processor.py`.
+* Collects user input, applies filters, and triggers recommendation & visualization.
 
-1. Clone this repository:
-   ```
+### `data_processor.py`
+
+* **`load_data(file_path)`**: Reads a CSV into pandas DataFrame.
+* **`clean_data(df)`**: Standardizes columns, handles missing values and outliers.
+* **`filter_data(df, filters)`**: Applies user-specified year, make, and body type filters.
+
+### `model.py`
+
+* **`get_car_recommendations(requirements, df, api_key)`**: Formats an AI prompt, calls Claude API, parses response, and matches recommendations to dataset entries.
+* Implements exponential backoff and rate-limit handling.
+
+### `visualization.py`
+
+* **`create_body_type_chart(df)`**: Plotly pie chart of body type distribution.
+* **`create_year_chart(df)`**: Bar chart of vehicle counts by year.
+* **`create_fuel_efficiency_chart(df)`**: Scatter plot of MPG trends across models.
+* **`create_mpg_comparison_chart(df)`**: Box plot comparing MPG across top manufacturers.
+
+## 🛠️ Installation
+
+1. **Clone the repository**
+
+   ```bash
    git clone https://github.com/yourusername/car-recommendation-system.git
    cd car-recommendation-system
    ```
+2. **Install dependencies**
 
-2. Install dependencies:
-   ```
+   ```bash
    pip install -r requirements.txt
    ```
+3. **Configure environment**
 
-3. Create a `.env` file in the project root with your Anthropic API key:
-   ```
-   CLAUDE_API_KEY=your_anthropic_api_key_here
-   ```
+   * Copy `.env.example` to `.env`.
+   * Set your Anthropic API key:
 
-## Usage
+     ```dotenv
+     CLAUDE_API_KEY=your_anthropic_api_key_here
+     ```
 
-1. Prepare your car dataset as a CSV file with columns like:
-   - make (manufacturer)
-   - model
-   - year
-   - price
-   - vehicle size class (body type)
-   - combined mpg for fuel type1
-   - Other relevant specifications
+## 🚴 Usage
 
-2. Run the Streamlit app:
-   ```
+1. **Prepare Data**: Ensure you have a CSV file with columns: `make`, `model`, `year`, `vehicle size class` (body type), `combined mpg for fuel type1`, plus any other specs.
+2. **Run the App**:
+
+   ```bash
    streamlit run app.py
    ```
+3. **Interact**:
 
-3. In the app:
-   - Set the path to your car data CSV file
-   - Enter your Anthropic Claude API key if not set in the .env file
-   - Describe your car requirements in natural language
-   - Use advanced filters if needed
-   - Click "Find My Perfect Car" to get recommendations
+   * Specify your car data CSV path and (optionally) API key in the sidebar.
+   * Describe your ideal car in the text input.
+   * Apply advanced filters if desired.
+   * Click **Find My Perfect Car** to view AI-driven recommendations and market insights.
 
-## How It Works
+## 🔧 Configuration & Customization
 
-1. **Data Processing**: The application loads and cleans the car dataset, handling missing values and standardizing formats.
+* **Model Selection**: Change the Claude model in `model.py` (e.g., `claude-3-opus`).
+* **Data Schema**: Adaptable to various datasets; include `price` column for price-based insights.
+* **UI Styling**: Modify colors and layout in `app.py` CSS.
 
-2. **User Input**: When you describe what you're looking for, your requirements are formatted into a prompt for Claude.
+## 🐞 Troubleshooting
 
-3. **AI Recommendation**: The Claude model processes your requirements against the car dataset and returns recommended car models.
+* **API Rate Limits**: The system retries with exponential backoff. If issues persist, reduce the number of samples or upgrade your Anthropic plan.
+* **Missing Columns**: Features tied to absent columns will be disabled. Check Streamlit logs for warnings.
 
-4. **Result Matching**: The system finds the best matches in the dataset based on Claude's recommendations.
+## 🔮 Future Improvements
 
-5. **Visualization**: The app generates market insights using Plotly to help you understand pricing trends and vehicle distributions.
+* Enhanced comparison view between recommended cars.
+* User feedback loop to refine AI suggestions.
+* Integration with real-time dealership inventory APIs.
+* Expand visualization dashboard with pricing and safety ratings.
 
-## Customization
+## 📄 License
 
-### API Configuration
-- The app uses Claude 3 Haiku by default. You can modify the model name in `model.py` to use other Claude models.
+Licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
-### Data Schema
-- The system is designed to work with various car datasets, adapting to available columns.
-- For best results, ensure your dataset includes at least: make, model, year, price, and body type.
+## 🙏 Acknowledgments
 
-### UI Customization
-- Modify the CSS in `app.py` to change the appearance of the application.
-
-## Troubleshooting
-
-### API Rate Limiting
-- The system includes retry logic with exponential backoff for handling API rate limits.
-- If you still encounter rate limit issues, try reducing the sample size in `model.py`.
-
-### Missing Data
-- If your dataset is missing certain columns, some features may be disabled.
-- Check the console logs for information about missing columns.
-
-## Future Improvements
-
-- Support for more complex filtering options
-- Comparison feature between recommended cars
-- User feedback system to improve recommendations
-- Integration with real-time car inventory APIs
-- Enhanced visualization with more market insights
-
-## License
-
-[MIT License](LICENSE)
-
-## Acknowledgments
-
-- Built with [Streamlit](https://streamlit.io/)
-- Powered by [Anthropic Claude](https://www.anthropic.com/claude)
+* Built with [Streamlit](https://streamlit.io/) and [Plotly](https://plotly.com/).
+* Powered by [Anthropic Claude](https://www.anthropic.com/claude).
