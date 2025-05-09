@@ -70,7 +70,7 @@ This system empowers users to discover their ideal vehicle by combining:
    ```
 3. **Configure environment**
 
-   * Copy `.env.example` to `.env`.
+   * Set `.env`.
    * Set your Anthropic API key:
 
      ```dotenv
